@@ -1,0 +1,129 @@
+\section{Dataset}
+
+\subsection{Dataset Explanation}
+The dataset utilized for training the neural networks was collected and described in the study by Jin et al. (2019) \cite{Jin2019PredictingMW}. This dataset was generated during an experiment where participants engaged in two distinct attention-demanding tasks designed to induce mind wandering: a Visual Search (VS) task and a Sustained Attention to Response Task (SART).
+
+\paragraph{Task Descriptions}
+In the VS task, participants were required to identify specific shapes amongst various nontarget shapes, demanding sustained visual attention and pattern recognition. The SART involved responding to text cues displayed on a screen, where participants had to press buttons corresponding to the words' uppercase or lowercase nature. The SART was structured to present nontargets more frequently, further challenging the participants' sustained attention.
+
+\paragraph{Mind Wandering Probes}
+During these tasks, participants were intermittently prompted with questions to self-report their level of attention and cognitive state. These probes aimed to classify the participants' mental state in real time, with responses immediately recorded and timestamped. The classification from these responses was used to label the EEG data, facilitating the subsequent analysis focused on mind wandering. The specific questions used in the probes and their corresponding classifications are detailed in \autoref{tab:probe}.
+
+\paragraph{Window Length Parameter}
+A key variable in the data processing was the 'Window Length,' which defines the duration in seconds before each probe, during which EEG data were considered relevant for the corresponding mental state label. This parameter was adjustable, allowing for an exploration of the trade-off between including more EEG data for model training and maintaining a high precision in the temporal correlation between the data and its labels. Increasing the window length provided more data but potentially reduced the accuracy of the label applicability over that extended period.
+
+\begin{table}[h]
+\centering
+\caption{Classification of Mental States During Task Performance}
+\begin{tabular}{|c|p{8cm}|c|}
+\hline
+\textbf{No.} & \textbf{Probe Question} & \textbf{Classification} \\ \hline
+1 & I entirely concentrated on the ongoing task. & On Task (OT) \\ \hline
+2 & I evaluated aspects of the task (e.g., my performance or how long it takes). & On Task (OT) \\ \hline
+3 & I thought about personal matters. & Mind Wandering (MW) \\ \hline
+4 & I was distracted by my surroundings (e.g., noise, temperature, my physical condition). & Distracted (DS) \\ \hline
+5 & I was daydreaming, thinking of task unrelated things. & Mind Wandering (MW) \\ \hline
+6 & I was not paying attention, but my thought wasn't anywhere specifically. & Unclear (UC) \\ \hline
+\end{tabular}
+\label{tab:probe}
+\end{table}
+
+\subsection{Preprocessing}
+The initial preprocessing steps were conducted using MATLAB, following the procedures outlined by Jin et al. (2019) \cite{Jin2019PredictingMW}. 
+
+Following the initial preprocessing in MATLAB, further data processing, encompassing additional preprocessing tasks, model development, and subsequent analyses, was executed in Python. A key aspect of Python-based preprocessing was the refinement of EEG data through the selective exclusion of less significant Intrinsic Mode Functions (IMFs). This approach involved retaining only the \(n\) most significant IMFs that closely resembled the original signal's profile, with \(n\) being an adjustable parameter. This parameterization facilitated targeted noise and artifact mitigation, enhancing data quality.
+
+Additionally, data balancing techniques were applied to address class imbalance issues inherent in the dataset. A subsequent section of this thesis provides detailed descriptions of the data balancing methods utilized.
+
+\subsubsection{MNE Epoch Data Structure}
+For effective data handling, the EEG recordings were transformed into the MNE-Python Epochs data structure, henceforth referred to simply as "epochs." Each epoch comprises a segment of the total data captured within a predefined window. Specifically, a 12-second window preceding each probe, and an associated label derived from the participant's response to the probe. To facilitate a binary classification between 'On Task' (OT) and 'Mind Wandering' (MW), responses categorized under 'Distracted' (DS) and 'Unclear' (UC) were excluded. Furthermore, the epochs were systematically organized into a dictionary indexed by the subject from whom the data were collected. Leading to the following main datastructure:
+
+\begin{verbatim}
+all_epochs = {
+    1: mne.Epochs(data1, events1, event_id),
+    2: mne.Epochs(data2, events2, event_id),
+    3: mne.Epochs(data3, events3, event_id),
+    ...
+}
+\end{verbatim}
+
+where 1,2,3 etc. correspond to the subject numbers containing their respective epochs. This structure made it easy to implement Leave-One-Participant-Out (LOPO), Leave-N-Participants-Out (LNPO) and individual modeling and training later on. The data is the raw EEG data for the epochs, events are the probe answer for each epoch. The data and events are extracted from the open dataset using the "load\_dataset\_n\_tasks" function provided by Jin et al. \cite{Jin2019PredictingMW}. Event\_id is the translation from internal events numbering to the classification and is thus the same for all subjects, in our case:
+
+\begin{verbatim}
+event_id = {
+    0: 'ot',
+    1: 'mw'
+}
+\end{verbatim}
+
+\subsection{Data Splitting}
+Data division into testing, validation, and training subsets was established at the project's outset. This initial split was performed before any class balancing or data augmentation processes to ensure that the validation and test sets more accurately mirrored the true distribution of the underlying data. However, this approach led to an imbalance in the dataset, which inadvertently biased the models toward predicting based on class distribution rather than the intrinsic data characteristics.
+
+To address these biases, a revised strategy was implemented where the test set continued to reflect the actual data distribution. In contrast, the validation set was balanced between classes to mitigate the influence of class distribution on model selection. This adjustment presented challenges, namely the choice between undersampling the majority class, losing valuable data, or oversampling the minority class, causing duplication for the validation set. The approach taken was defaulting to undersampling to avoid overfitting yet leaving it as an option for later testing. 
+
+\subsection{Class Balancing}
+Given the significant imbalance between the classes in the dataset, various class balancing techniques were implemented to mitigate the model's predisposition to favor the majority class, which could compromise the accuracy of predictions based on actual data characteristics rather than class distribution. Five class balancing methods were explored: Undersampling, Oversampling, Synthetic Minority Over-sampling Technique (SMOTE), Synthetic MEMD Minority Oversampling Technique (SMEMD-MOTE), and a baseline scenario with no balancing applied. Each method's theoretical basis and application are detailed in \autoref{unbalanced_dataset_theory}. Importantly, the balancing interventions were applied exclusively to the training dataset to ensure the model's generalization ability from a balanced learning environment.
+
+\subsection{Data Augmentation}
+A data augmentation technique was also explored to further enhance the model's robustness and performance. The technique involved integrating synthetic data into the training set, thereby increasing its size and diversity. The specific augmentation method utilized was based on the technique used in SMEMD-MOTE, which is designed to generate data that maintains the intrinsic properties of the original signals while providing new variations designed to fit well with EEG signals. 
+
+
+
+\subsection{Regularization}
+
+In machine learning, regularization techniques are critical for controlling model complexity and preventing overfitting, particularly in models with large feature spaces. Overfitting occurs when a model learns not only the underlying pattern but also the noise in the training data, leading to poor generalization on unseen data. To address this, this study evaluated three regularization techniques: L1 regularization, L2 regularization, and a control scenario with no regularization applied.
+
+\begin{itemize}
+    \item \textbf{L1 Regularization}: This method, also known as Lasso regularization, encourages the model to consider only the most important features by effectively reducing the less significant feature weights to zero. It is particularly useful for feature selection in models with high dimensionality.
+    \item \textbf{L2 Regularization}: Known as Ridge regularization, this technique penalizes the square of the feature weights, which helps control the model's complexity without eliminating the weights entirely. It tends to distribute the error among all the features equally and is useful in cases where many features are believed to contribute to the predictive power of the model.
+    \item \textbf{No Regularization}: The model's performance without any regularization was also assessed to establish a baseline, allowing for a comparative analysis of the impact of L1 and L2 regularization on model complexity and performance.
+\end{itemize}
+
+\section{Model Designs}
+\subsection{Individual Model}
+In the individual model design, each subject got their model trained specifically on them. Each model was then tested on the test epochs from the same subject to see how well it was classified within subjects. Due to early testing results, this model design was abandoned early on.
+\subsection{General Model}
+In the general model design, the model was trained on all except one participant, the Leave-One-Participant-Out (LOPO) method. It was then tested on the left-out subject to see how well it generalized across different subjects. This was repeated for all subjects, leaving out a different subject every time.
+\subsection{Transfer Model}
+The last model design was a mix of the first two; a general model was created on all but one subject, and then the general model was fine-tuned on the left-out subject and tested on unseen epochs from this subject. Due to time constraints, this design was only developed in code but not well tested, and so it is left for future work. 
+
+%%%%%
+\section{Configuration Exploration}
+This thesis explored various configurations for the Convolutional Neural Network (CNN) to optimize performance and generalizability. A Python module named `config` was developed to manage the general setup configurations and CNN-specific parameters. This module was split into two parts: `config.py` for general settings and `neural\_net\_config.yaml` for CNN-specific settings.
+
+\paragraph{config.py}
+This file primarily facilitated the integration of High-Performance Computing (HPC) resources, simplifying the project's continuation for other students. It included high-level configurations such as HPC user configurations, job names, folder structures, and high-order settings.
+
+\paragraph{neural\_net\_config.yaml}
+The CNN-specific parameters were organized using a YAML structure due to its flexibility with data types and its ability to include comments, enhancing the explainability of the configuration settings and making onboarding to the project easier. The YAML file contained a dictionary specifying possible configurations for the CNNs, structured with key-value pairs where the values were lists of configuration options. Below is an excerpt from this configuration dictionary:
+
+\begin{footnotesize}
+\begin{verbatim}
+common:
+  time: ["05:00:00"]  # Run time for the job on HPC (Idun)
+  partition: ["GPUQ"]  # Choose between CPU and GPU
+  mem: ["64GB"]  # Memory needed
+  model_to_use: ["EEGNeX"]  # ["EEGNeX", "EEGnet2018"], Only models listed here will be run
+  
+# Model specific parameters
+model:
+  EEGNeX:
+    mode: ["general"]  # ["individual", "general", "transfer"]
+    transfer_model_sub: [null]  # If mode is transfer, specify the subject for fine-tuning
+    batchSize: [30]
+    nEpoch: [100]  # Number of complete passes through the training dataset
+    balanceMethod: [null, "oversample", "smote", "undersample", "memd"]
+    dropout: [0.4]  # Dropout rate
+\end{verbatim}
+\end{footnotesize}
+Each key in the dictionary represents a configuration parameter with mutually exclusive options. The configurations were dynamically combined into separate runs, called jobs, each testing a unique combination of settings.
+
+\section{HPC Integration}
+\label{hpcIntegration}
+Due to the extensive computational demands of training CNNs, a module was developed to facilitate using NTNU's HPC device, IDUN. This module enabled interactions with IDUN directly from the Visual Studio Code environment, allowing for job submission, monitoring, and retrieval of outputs. It automated the translation of configurations from the `config` module into HPC-compatible `.slurm` files and managed the distribution of tasks across the computing resources.
+
+\section{Results Generation}
+Upon retrieval, results from various configurations needed to be analyzed and visualized in a manner that allowed for direct comparison to assess the impact of individual parameters. A results analysis method was developed to automatically identify and group jobs differing only in one parameter, facilitating a clear comparison of their effects. The performance metrics used for evaluation included accuracy, precision, recall, F1 score, AUROC, and kappa, detailed in \autoref{performanceMetrics}. These metrics were plotted for training, validation, and test datasets, with lines indicating random chance for reference.
+
+Furthermore, all model outputs were consolidated into a central CSV file, enhancing data analysis capabilities through visualization tools and simplifying the synthesis of results across all experimental runs.
+ 

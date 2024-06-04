@@ -1,0 +1,44 @@
+This chapter outlines possible improvements and extensions for the project, providing a foundation for future research and development. It aims to guide students and researchers interested in advancing the current project.
+
+\section{Code Structure}
+The existing codebase is well-structured with clearly defined modules such as config, IDUN pipeline, and main. Additionally, the folder hierarchy is logically organized. However, the src folder has grown considerably large and somewhat disorganized. Specifically, files like neural\_net\_utils.py have become excessively large and would benefit from being divided into multiple, more concise files to enhance readability and maintainability.
+
+\subsection{Enhanced Plotting Capabilities}
+The plotting code, originally developed in Jupyter Notebook, predates the creation of the model\_performance.csv file and thus does not utilize this common file for all model runs. Some plotting using the csv file has been implemented, but the capabilities are rather basic and should be improved. Future improvements should integrate this file, implementing functionalities for cleaning it, such as removing models lacking comprehensive metrics and adding additional plotting variations. This enhancement will streamline the process and make the plotting code more efficient. The current plotting code addresses complex comparison tasks, like identifying models with similar performance characteristics, and is a useful reference. Utilizing the Pandas library to handle the CSV data is recommended, as it will simplify data manipulation. Since visualizing model performance is crucial for understanding and improving the model, expanding these capabilities is essential.
+
+\section{Label Validation Pipeline}
+An area identified for future work is the development of a label validation pipeline. The dataset used in this thesis has raised some doubts regarding the validity of the epoch labels, particularly because the tasks performed by each subject were designed to induce mind wandering. Yet, it has resulted in data skewed towards 'on-task' performance, which seems improbable. For instance, one participant's data showed 100\% 'on-task' epochs, which is highly unlikely.
+
+Two main approaches are proposed to address this issue. The first, simpler approach is implementing an exclusion paradigm, which removes participant epochs based on configuration or job parameter settings. The second, more involved approach involves creating a comprehensive validation pipeline. This would involve generating Event-Related Potentials (ERPs) for all epochs to visually verify whether they align with the labeled mental states against criteria derived from studies such as \cite{Rodriguez-Larios2020} and \cite{DelormeEEGMeditationStudy}. This additional labeling would then be stored for future runs and used to remove or relabel bad epochs.
+
+\section{Extending the Models}
+Although the transfer model has been developed, it has not undergone as extensive testing and application as the general model. Given the subject-specific nature of EEG data, transfer learning, particularly fine-tuning on the target subject, is expected to perform better. This approach will be especially beneficial if a substantial amount of data is collected from a single subject, which future students continuing the project could explore by doing testing on themselves.
+
+The general model could also be further tuned; however, without additional data or new methods for increasing performance, the current version will unlikely be tuned to score substantially higher.
+
+\section{Further parameter tuning}
+Though many parameters have been explored it is likely that further optimization is possible. The L1 regularization method was not fully explored for optimal regularization values in this thesis and stands as a possible improvement. 
+
+Also most parameters were explored with fixed values for all other parameters to figure out the individual contributions from the different parameter values possible within that parameter. This however leads to all synergetic effects between different parameters being lost, and as such continuing the search for optimal parameter combinations from smaller subsets of only the best possible values for every parameter is a adviced next step for finalizing the parameter tuning.
+
+\section{Improvement in Model Selection}
+The model selections in this thesis have mostly been based on the metrics AUROC and Kappa on the Test set. This was chosen as AUROC seemed to have the best overall correlation with other metrics, and  Kappa taking the dataset imbalance into account making it more informative. Howver, though this was a good choice given the time constraints some models picked using this method stilled scored very poorly on other metrics proving that this method can lead to picking a model overfitted to the specific metric. Hence creating a method for improved model selection is smart. This should be based on looking at scores on all metrics from all sets, while weighing different sets and metrics differently depending on their overall performance correlation. A rule of thumb used in this thesis has been that a slight negative slope from Training to Validation to Test is a good indication of a well adjusted model, since its expected that models perform better on seen data.
+
+\section{Dataset Expansion}
+More data is a common requirement in machine learning applications, particularly for data-intensive tasks such as EEG data classification.
+
+\subsection{Creating a New Dataset}
+One potential expansion involves creating a new dataset to replace or supplement the current one. This could be achieved by following protocols detailed in the theoretical portion of this thesis in \autoref{subsec: study_design} and would greatly benefit from an established validation pipeline. Implementing the Sustained Attention to Response Task (SART) with retrospective questionnaires and self-classification is recommended for reliable data collection.
+
+\subsection{Verification Using Munk Dataset}
+The \href{https://openneuro.org/datasets/ds001787/versions/1.0.3}{Munk dataset} contains EEG data from expert meditators, who typically have a profound understanding of their internal states. Utilizing this dataset could serve as a robust control to test the generalizability of the classifier developed in this project.
+
+\subsection{Exploration of Other Datasets}
+Exploring additional datasets could provide valuable insights, though careful selection based on the nature of the tasks performed, participant skill levels, EEG electrode configuration, and measurement frequency is crucial. A non-exhaustive collection of potential datasets is available \href{https://github.com/Pandey-Pankaj/ScienceOfMeditation/blob/main/datasets.md}{here}. 
+
+\section{Analysing the Project Thesis questionnaires}
+As part of the project thesis, a lot of questionnaires were collected to use as a follow-up study to the study sparking the project thesis. This data has only been partially analyzed as the CNN development took more time than expected. This analysis is part of the overall goal of understanding and showing the progress of novice meditators.  
+
+\section{Electrode Analysis}
+Investigating which electrodes significantly impact classification could provide valuable information. Utilizing existing code from Viktor in his  "motor\_intention\_decoding\_viktor" GitHub repository under "wavesresearch" could simplify this analysis. This exploration could reveal whether the classifier has learned meaningful brain wave patterns or is predominantly influenced by artifacts such as eye muscle movements. If the latter is true, EEG might not be the optimal measurement tool for studying mind wandering. Conversely, if specific brain regions are identified, this could corroborate findings related to the default mode network and its connection to mind wandering.
+%%%%%

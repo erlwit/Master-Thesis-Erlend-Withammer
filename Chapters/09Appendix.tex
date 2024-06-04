@@ -1,0 +1,439 @@
+
+
+\chapter{A - Github repository}
+\label{Appendix A}
+\addcontentsline{toc}{chapter}
+
+The Github repository linked below includes all the code and latex files used in this document. The readme file in the AttentionNet folder provides further explanations. 
+
+
+\subsection*{Repository links}
+\begin{itemize}
+    \item Code for this thesis: \url{https://github.com/wavesresearch/ContemplativeNeuroscience} 
+    \item Code from original study: \url{https://github.com/christina109/MW_EEG_CNN}
+    \item Early version the LIS was used as starting a point: \url{https://github.com/christina109/MW_EEG_CNN}
+\end{itemize}
+
+You need access to the WavesResearch GitHub to access the repository. Ask your supervisor for this or contact the supervisor of this thesis.
+
+A short explanation of the repository. It contains a lot of old code as it was initially created from two different repositories. The original data was collected by \cite{Jin2019PredictingMW}, and their code can be found \href{https://github.com/christina109/MW_EEG_CNN}{here}. This code was then mixed with code from an early version of the Locked-in-syndrome color classification found \href{https://github.com/wavesresearch/EEG-LIS-Project_Fall2023/tree/main}{here}. As one can imagine, there was a lot of unused code designed for different purposes that were not fine-tuned for this project. Once a prototype had been built and was functioning, this was synthesized into AttentionNet, where all the thesis-relevant code can be found. Some simple data analysis code was developed for questionnaires conducted in the project thesis in the questionnaires folder, but this was abandoned to focus on AttentionNet.
+
+\subsection*{Top Repo}
+
+\begin{footnotesize}
+\begin{itemize}[label={}, leftmargin=*]
+    \item \textbf{.DS\_Store}   some Mac file
+    \item \textbf{todo.md}
+    \item \textbf{README.md}
+    \item \textbf{.gitignore}    
+    \item \textbf{req.txt}
+    \item \textbf{anonymize.py}     anonymizes the questionnaire\_data
+    \item \textbf{eeg\_data}
+    \item \textbf{AttentionNet}     final CNN implementation, what is used in the master thesis
+    \item \textbf{cnn}      early version of the CNN implementation with old code from LIS and original paper
+    \item \textbf{research\_used}   some papers (not exhaustive)
+    \item \textbf{contemplative}    virtual environment
+    \item \textbf{questionnaire\_analisys}  basic analysis code
+    \item \textbf{.git}
+    \item \textbf{questionnaire\_data}  data from project thesis questionnaires
+    \item \textbf{plots}
+    \item \textbf{mweeg} old code from original paper
+\end{itemize}
+\end{footnotesize}
+
+\subsection*{AttentionNet}
+\begin{footnotesize}
+\begin{itemize}[label={}, leftmargin=*]
+    \item
+        \begin{description}
+        \item [setup.sh:] Sets up idun model to run using idun not python idun.py
+        \item [model\_performances.csv:] All saved models' performance and parameters are collected here
+        \item [requirements.txt:] Necessary libraries
+        \item [\_\_init\_\_.py]
+        \item [README.md]
+        \item [config:] Config module
+            \begin{description}
+            \item [config.py:] High-order configs
+            \item [\_\_init\_\_.py]
+            \item [neural\_net\_config.yaml:] CNN param configs
+            \item [jobs:]
+                \begin{description}
+                \item [B\_MEMD\_006.yaml:] Job parameters (for easy reference)
+                \item [slurm:]
+                    \begin{description}
+                    \item [B\_MEMD\_006.slurm:] Slurm version of job used by Idun
+                    \end{description}
+                \end{description}
+            \end{description}
+        \item [output:] Outputs saved from idun
+            \begin{description}
+            \item [B\_MEMD\_006.out:] Log file from job
+            \item [models:] 
+                \begin{description}
+                \item [EEGNeX:] Selected model
+                    \begin{description}
+                    \item [mode:]
+                        \begin{description}
+                        \item [general:] Selected mode
+                            \begin{description}
+                            \item [B\_MEMD\_006:] Specific job
+                                \begin{description}
+                                \item [test\_accuracies.yaml:] Best scoring set folds are here
+                                \item [subject\_1:] Test done on sub 1
+                                    \begin{description}
+                                    \item [test\_acc.yaml:] Scores from sub 1
+                                    \item [model.keras:] Actual model
+                                    \end{description}
+                                \item [subject\_2:] Test done on sub 2
+                                    \begin{description}
+                                    \item [test\_acc.yaml:] Scores from sub 2
+                                    \item [model.keras:] Actual model       
+                                    \end{description}
+                                \end{description}
+                            \end{description}
+                        \end{description}
+                    \end{description}
+                \end{description}
+            \end{description}
+        \item [docs:] Place to save docs
+            \begin{description}
+            \item [plots:] Plots are saved here when generated
+                \begin{description}
+                \item [memd\_ratio:] Plots for memd\_ratio param
+                    \begin{description}
+                    \item [memd\_ratio\_test\_auroc.png]
+                    \item [memd\_ratio\_test\_kappa.png]
+                    \item [memd\_ratio.png]
+                    \item [memd\_ratio\_val\_kappa.png]
+                    \item [memd\_ratio\_val\_auroc.png]
+                    \end{description}
+                \end{description}
+            \end{description}
+        \item [scripts:] necessary scripts for making it work
+            \begin{description}
+            \item [\_\_init\_\_.py]
+            \item [idun.py] hpc integration for simplifying using idun form terminal in vscode
+            \item [matlab\_script] Matlab script for setting up the data
+            \end{description}
+        \item [data:] data stuff used by the Matlab script
+            \begin{description}
+            \item [matfiles:] mat files necessary for the script to set the data correctly
+                \begin{description}
+                \item [bs2is.mat]
+                \item [pars\_stfeats.mat]
+                \end{description}
+            \end{description}
+        \item [src:]    files for the actual project
+            \begin{description}
+            \item [util.py] top utility funcs
+            \item [job.py]  class description
+            \item [\_\_init\_\_.py]
+            \item [plot\_compare\_models.ipynb]  plotting code
+            \item [main.py]
+            \item [models:] model-specific code
+                \begin{description}
+                \item [general\_model.py]
+                \item [memd.py]    memd algorithm
+                \item [transfer\_model.py]
+                \item [\_\_init\_\_.py]
+                \item [EEGModels.py]    EEGNeX code
+                \item [individual\_model.py]
+                \item [neural\_net\_utils.py]   Used by the different models
+                \item [preprocessing.py]
+                \item [printTests.py]
+                \item [utility\_funcs.py]
+                \item [load\_data.py]   code from original paper adapted to load as mne epochs
+                \end{description}
+            \end{description}
+            \end{description}
+\end{itemize}
+\end{footnotesize}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\chapter{B - Setup}
+\label{Appendix B}
+This appendix contains a project setup guide. For a more in-depth, step-by-step guide, read the README file in the AttentionNet folder.
+
+\section{Project Setup Guide}
+\subsection{General Project Setup}
+
+This section provides a comprehensive guide to setting up the project environment, particularly on Mac and Linux systems. For compatibility, it is recommended that you use the Windows Subsystem for Linux (WSL) if you are using Windows.
+
+\subsubsection{Before You Start}
+
+This project was developed on a Mac, meaning the steps provided will likely work on Mac and Linux but may require adjustments for Windows. If using a Windows computer, consider using WSL or dual-booting a Linux partition. For WSL, refer to the \href{https://code.visualstudio.com/docs/remote/wsl-tutorial}{WSL tutorial}. Additionally, you will need access to the Idun HPC cluster and the WavesResearch Git repository. Please get in touch with your supervisor to obtain these accesses.
+
+\subsubsection{AttentionNet Setup}
+
+To ensure all Python modules are correctly linked:
+
+\begin{enumerate}
+    \item Set the \texttt{PYTHONPATH} environment variable:
+    \begin{verbatim}
+    export PYTHONPATH="/cluster/home
+    /<path_to_attentionnet>/AttentionNet:$PYTHONPATH"
+    \end{verbatim}
+    Replace \texttt{<path\_to\_attentionnet>} with the path to the AttentionNet repository on Idun.
+
+    \item To find the path:
+    \begin{enumerate}
+        \item Go to the \href{https://apps.hpc.ntnu.no/pun/sys/dashboard/}{Idun dashboard}.
+        \item Click on the "Cluster" dropdown menu and select "Idun shell access."
+        \item Log in and navigate to the AttentionNet folder (clone the repo if you don't have it).
+        \item Inside the AttentionNet folder, type \texttt{pwd} and use the output for the \texttt{export} command.
+    \end{enumerate}
+\end{enumerate}
+
+\subsubsection{Idun HPC Setup}
+
+This package is relatively standalone and can be adapted to other projects by modifying the \texttt{scripts/idun.py} code to fit your needs.
+
+To set up the script for running jobs on Idun:
+
+\begin{enumerate}
+    \item From the project root directory (AttentionNet folder), run:
+    \begin{verbatim}
+    chmod +x setup.sh && ./setup.sh
+    \end{verbatim}
+
+    \item Source the printed shell configuration:
+    \begin{verbatim}
+    source <printed shell path>
+    \end{verbatim}
+    Replace \texttt{<printed shell path>} with the actual path printed by the setup script, which will be 
+    \begin{verbatim}
+    ~/.zshrc or User/<username>/.zshrc
+    \end{verbatim} or similar.
+    
+\end{enumerate}
+
+\subsubsection{SSH Setup}
+
+This setup is essential for automating interactions with the Idun HPC cluster and GitHub without entering passwords repeatedly.
+
+\paragraph{Idun SSH Setup}
+
+To set up SSH key-based authentication for Idun:
+
+\begin{enumerate}
+    \item Generate a new SSH key pair:
+    \begin{verbatim}
+    ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+    \end{verbatim}
+    Accept the default file location and do not use a passphrase.
+
+    \item Copy your public SSH key to Idun:
+    \begin{verbatim}
+    ssh-copy-id user@hostname
+    \end{verbatim}
+    Replace \texttt{user} with your username and \texttt{hostname} with Idun's hostname. These are the same ones you need to have in the config/config.py file, so look there if you are not sure. This command will prompt you to enter your password for the remote server (student password).
+\end{enumerate}
+
+\paragraph{GitHub SSH Setup}
+
+To set up SSH for GitHub:
+
+\begin{enumerate}
+    \item Check for existing SSH keys:
+    \begin{verbatim}
+    ls -al ~/.ssh
+    \end{verbatim}
+
+    \item Generate a new SSH key if needed:
+    \begin{verbatim}
+    ssh-keygen -t ed25519 -C "your_email@example.com"
+    \end{verbatim}
+
+    \item Start the SSH agent and add your key:
+    \begin{verbatim}
+    eval "$(ssh-agent -s)"
+    ssh-add ~/.ssh/id_ed25519
+    \end{verbatim}
+
+    \item Add the SSH key to your GitHub account. Copy the public key:
+    \begin{verbatim}
+    pbcopy < ~/.ssh/id_ed25519.pub  # Mac
+    xclip -selection clipboard < ~/.ssh/id_ed25519.pub  # Linux
+    \end{verbatim}
+
+    \item Add the key in GitHub under Settings > SSH and GPG keys.
+
+    \item Test your SSH connection:
+    \begin{verbatim}
+    ssh -T git@github.com
+    \end{verbatim}
+\end{enumerate}
+
+Configure your local Git repository to use SSH:
+\begin{verbatim}
+git remote set-url origin git@github.com:username/repository.git
+\end{verbatim}
+Replace \texttt{username/repository.git} with your GitHub repository details.
+
+\subsubsection{Matlab Setup}
+
+The dataset used in this thesis required Matlab for data recording and preprocessing.
+
+\paragraph{Getting the \texttt{feats\_matfile}}
+
+\begin{enumerate}
+    \item Open the \texttt{scripts/matlab\_script} folder in Matlab.
+    \item Add the folder to the Matlab path.
+    \item Run the \texttt{run\_stFeatCompute.m} file.
+    \item Move the new \texttt{feats\_matfile} folder into the \texttt{data} folder.
+\end{enumerate}
+
+If issues arise, clone the repository from \href{https://github.com/christina109/MW_EEG_CNN.git}{MW\_EEG\_CNN} and follow similar steps.
+
+\paragraph{Getting the Data}
+
+Download the dataset and transfer it to Idun:
+
+\begin{enumerate}
+    \item Download the \texttt{study1} folder from \href{https://unishare.nl/index.php/s/T94LXPQqw5FEA4J?path=%2F}{here} (16-20 hours).
+    \item Follow the \href{https://www.hpc.ntnu.no/idun/documentation/transferring-data/}{FileZilla guide} for transferring data to Idun (2-4 hours).
+\end{enumerate}
+
+\subsubsection{Virtual Environment Setup}
+
+To set up a Python virtual environment, activate it, and install the required packages:
+
+\begin{enumerate}
+    \item Navigate to your project directory (AttentionNet):
+    \begin{verbatim}
+    cd /path/to/your/project
+    \end{verbatim}
+
+    \item Create a virtual environment:
+    \begin{verbatim}
+    python3 -m venv <venv_name>
+    \end{verbatim}
+
+    \item Activate the virtual environment:
+    \begin{itemize}
+        \item On Mac/Linux:
+        \begin{verbatim}
+        source <venv_name>/bin/activate
+        \end{verbatim}
+
+        \item On Windows:
+        \begin{verbatim}
+        .\<venv_name>\Scripts\activate
+        \end{verbatim}
+    \end{itemize}
+
+    \item Install the required packages from \texttt{requirements.txt}:
+    \begin{verbatim}
+    pip install -r requirements.txt
+    \end{verbatim}
+\end{enumerate}
+
+
+\section{Idun Script Guide}
+
+This section explains how to use the job management module for Idun, simplifying running and managing jobs on the Idun HPC cluster.
+
+\subsection{Using the Idun Module}
+
+\paragraph{Setup Steps}
+Remember you can always run the following command for an explanation:
+\begin{verbatim}
+    idun -h
+\end{verbatim}
+The script is called using "idun" and not "python idun.py" because of the "setup.sh" file that was run earlier. This makes it faster and easier to use.
+
+\begin{enumerate}
+    \item Ensure the \texttt{config.py} file is correctly configured.
+    \item Set up the remote environment (This has not been used for a while but is flexible):
+    \begin{verbatim}
+    idun -sr
+    \end{verbatim}
+
+    \item Edit the \texttt{neural\_net\_config.yaml} file to specify the jobs you want to run.
+
+    \item Create and submit jobs:
+    \begin{verbatim}
+    idun -c
+    \end{verbatim}
+    Add the \texttt{-d} flag to delete old jobs before creating new ones and add '-sr' to run with the remote environment attached. Add '-i' to pip install requirements.txt before running. For verbose output, use:
+    \begin{verbatim}
+    idun -c -v
+    \end{verbatim}
+
+    \item Retrieve job outputs:
+    \begin{verbatim}
+    idun -g
+    \end{verbatim}
+
+    \item List jobs in idun queue:
+    \begin{verbatim}
+    idun -q
+    \end{verbatim}
+    add \texttt{-u <username>} to only print the ones from the user
+
+    \item Cancel pending jobs on Idun. Use the \texttt{-r} flag to cancel running jobs as well and \texttt{-p} to not cancel pending jobs (flipped as pending jobs are usually the most common to cancel). Add \texttt{-j \(<job\_id>\)} to cancel a specific job.
+    \begin{verbatim}
+    idun -d
+    \end{verbatim}
+    
+
+    \item Get info about a job:
+    \begin{verbatim}
+    idun -j <job_id>
+    \end{verbatim}
+    
+\end{enumerate}
+
+\paragraph{Extending Functionality}
+
+\subsubsection{Adding Parser Arguments}
+
+To add new functionality, introduce additional arguments in the \texttt{main} function's argument parser. For example, to add an argument specifying a different configuration file:
+\begin{verbatim}
+parser.add_argument('-f', '--config_file', type=str, 
+help='Specify a different configuration YAML file')
+\end{verbatim}
+
+Run the module with the new configuration file:
+\begin{verbatim}
+python idun.py -c -f custom_config.yaml
+\end{verbatim}
+
+\subsubsection{Modifying SLURM Job Files}
+
+Modify the \texttt{generate\_slurm\_file} function to add more functionality or change job parameters. For example, to add a new module load command or change resource allocation. A lot of old code is commented out but not removed to exemplify possibilities.
+\begin{verbatim}
+def generate_slurm_file(job, job_name, connect_to_remote_env,
+install_requirements_on_idun):
+    ...
+    file.write("module load some_additional_module\n")
+    ...
+\end{verbatim}
+
+\subsubsection{Advanced SLURM File Usage}
+
+Extend the SLURM file generation to include advanced setups:
+\begin{verbatim}
+def generate_advanced_slurm_file(job, job_name, setup_script):
+    ...
+    file.write(f"bash {setup_script}\n")
+    file.write(f"python3 src/main.py --name {job_name} --timed\n")
+    file.write('echo "Job finished"\n')
+    ...
+\end{verbatim}
+
+By following these guidelines, you can efficiently manage and extend the job submission process for the Idun cluster, ensuring a flexible and scalable approach to computational job management in your research workflow.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{C - Project Thesis}
+\label{Appendix C}
+\includepdf[pages=-]{Chapters/ProjectTheisisErlendWithammer-1}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
